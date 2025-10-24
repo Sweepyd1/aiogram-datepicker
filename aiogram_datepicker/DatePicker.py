@@ -31,6 +31,64 @@ class DatePicker:
         prompt_select_day_fmt: str = "Месяц: {year}-{month:02d}. Выберите день:",
         button_today: str = "Сегодня",
     ):
+        """A flexible date picker for Telegram bots built with aiogram.
+
+    Supports two interaction modes:
+      - **inline**: Displays an interactive calendar in a single message with
+        month navigation.
+      - **step**: Guides the user through a step-by-step selection:
+        year → month → day.
+
+    Each instance must use a unique `prefix` to avoid callback data conflicts
+    when multiple date pickers are used in the same bot.
+
+    Args:
+        mode (Literal["inline", "step"], optional): Interaction mode.
+            Defaults to "inline".
+        date_format (str, optional): Date string format used when
+            `return_as="str"`. Defaults to "%Y-%m-%d".
+        return_as (Literal["date", "str"], optional): Type of the selected
+            value passed to the handler—either a `datetime.date` object or a
+            formatted string. Defaults to "date".
+        start_date (Optional[date], optional): Minimum allowed date (inclusive).
+            Defaults to today.
+        end_date (Optional[date], optional): Maximum allowed date (inclusive).
+            Defaults to `start_date + 365 days`.
+        on_date_selected (Optional[Callable], optional): Async callback function
+            invoked when a date is selected. It receives two arguments:
+            `(selected_value: date | str, callback: CallbackQuery)`.
+            Defaults to None.
+        prefix (str, optional): Unique prefix for callback data.
+            Required when using multiple pickers. Defaults to "dp".
+        month_names (Optional[list[str]], optional): List of 12 month names.
+            Defaults to Russian month names.
+        day_names (Optional[list[str]], optional): List of 7 weekday abbreviations
+            (starting from Monday). Defaults to Russian short names ("Пн", "Вт", etc.).
+        prompt_select_date (str, optional): Prompt text for inline mode.
+            Defaults to "Выберите дату:".
+        prompt_select_year (str, optional): Prompt when selecting a year in step mode.
+            Defaults to "Выберите год:".
+        prompt_select_month_fmt (str, optional): Prompt format when selecting a month.
+            Supports `{year}` placeholder. Defaults to "Год: {year}. Выберите месяц:".
+        prompt_select_day_fmt (str, optional): Prompt format when selecting a day.
+            Supports `{year}` and `{month}` placeholders.
+            Defaults to "Месяц: {year}-{month:02d}. Выберите день:".
+        button_today (str, optional): Label for the "Today" button in inline mode.
+            Defaults to "Сегодня".
+
+    Example:
+         async def handle_date(selected, callback):
+             await callback.message.answer(f"Selected: {selected}")
+        
+         picker = DatePicker(
+             mode="inline",
+             start_date=date(2025, 1, 1),
+             end_date=date(2025, 12, 31),
+             on_date_selected=handle_date,
+             prefix="my_picker"
+         )
+        dp.include_router(picker.get_router())
+        """
         self.mode = mode
         self.date_format = date_format
         self.return_as = return_as
